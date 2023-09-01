@@ -133,7 +133,9 @@ class Check < ApplicationRecord
             update_columns(tls_expires_at: tls_expires_at, tls_expires_in_days: tls_expires_in_days)
           end
 
-          if tls_expires_in_days < 30
+          tls_warn_threshold = ENV.fetch("TLS_EXPIRES_IN_DAYS_WARN_THRESHOLD", 30).to_i
+
+          if tls_expires_in_days < tls_warn_threshold
             NOTIFICATIONS_TLS_EXPIRES.each do |notification|
               notification.notify(
                 name: name,
